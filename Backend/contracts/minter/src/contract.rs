@@ -325,14 +325,15 @@ fn mint_msg(
         skills.push(val);
     }
 
-    let skill_str = serde_json::to_string(&skills).unwrap();
+    let skill_str = serde_json::to_string(&skills)
+        .map_err(|e| StdError::generic_err(format!("Error serializing skills: {}", e)))?;
     let priv_meta = Metadata {
-        name: Some(name),
+        name: Some(name.clone()),
         description: None,
         image: Some(skill_str),
     };
     let mint_msg = NftHandleMsg::Mint {
-        token_id: None,
+        token_id: Some(name),
         owner: Some(owner.clone()),
         public_metadata: Some(pub_meta),
         private_metadata: Some(priv_meta),
